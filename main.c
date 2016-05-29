@@ -10,28 +10,34 @@
 #define	BLKSIZE		4096
 
 
-int main(int size, char * arguments[]) {
+int main(int amount, char * arguments[]) {
 
 	char * ptr;
+        char * cpy = "copy";
 	int bytes;
 	struct stat status;
 	mode_t mode;
+        FILE *dest_file;
+        FILE *src_file;
         
         
         
 		
-	if (size != 3){ // Anzahl der Argumente überprüfen
+	if (amount != 4){ // Anzahl der Argumente überprüfen 3+1 wegen Netbeans Pfadangabe
             
         	fprintf(stderr, "Es müssen 3 Argumente übergeben werden: copy Quelle Ziel \n"); //Ausgabe erfolgt mit stderr = Standard Fehlerausgabe
         	return EXIT_FAILURE;
 	}
         
-        if(strcmp(arguments[1], ) ){
-            
-            
-        }
         
-        int src_file = open(arguments[1], O_RDONLY); //versuch die  Quelle als Read Only zu Öffnen *Check open()*
+        /*   Auf copy Argumenbt überprüfen
+        if(strcmp(arguments[1], cpy) != 0 ){
+            
+            fprintf(stderr, "Parameter 2 muss 'copy' heißen!");
+            
+        }*/
+        
+        src_file = fopen(arguments[2], "r"); //versuch die  Quelle als Read Only zu Öffnen *Check open()*
         
 	if(src_file < 0){ //wenn Datei nicht zu öffnen (=0) wird Fehler ausgegeben
             
@@ -49,7 +55,7 @@ int main(int size, char * arguments[]) {
 	mode = status.st_mode & ~S_IFMT; // Auslesen der Quelldateirechte
 
 	
-	int dest_file = open(arguments[2], O_WRONLY| O_CREAT| O_EXCL, 0); //O_CREAT erstellt den File wenn nicht vorhanden ()benötigt ,0) O_EXCL gibt auf errno EEXIST wenn bereits vorhanden
+	dest_file = fopen(arguments[3], "w"); //Datei wird erstellt, falls vorhanden, dann überschrieben
         
         //chmod mit mode
         chmod(arguments[3], mode); //Rechts Setzen wie bei Quelldatei
@@ -103,12 +109,13 @@ int main(int size, char * arguments[]) {
 	if(fchmod(dest_file, mode) < 0) 
 		perror("Fehler bei: fchmod Ziel:"); //keine Rechte
 	
-	free(ptr);
-	assert(close(src_file)>=0);
-	assert(close(dest_file)>=0);
- * 
- * */
+	free(ptr);*/
+//	assert(close(src_file)>=0);
+//	assert(close(dest_file)>=0);
 
-    return (EXIT_SUCCESS);
+        fclose(dest_file);
+        fclose(src_file);
+        
+    return EXIT_SUCCESS;
 }
 
