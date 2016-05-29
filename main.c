@@ -10,26 +10,30 @@
 #define	BLKSIZE		4096
 
 
-int main(int argc, char * argv[]) {
+int main(int size, char * arguments[]) {
 
 	char * ptr;
 	int bytes;
 	struct stat status;
 	mode_t mode;
 		
-	if (argc != 3){
-        	fprintf(stderr, "Es müssen 3 Argumente übergeben müssen: %s Quelle Ziel \n" , argv [0]);
+	if (size != 3){
+            
+        	fprintf(stderr, "Es müssen 3 Argumente übergeben werden: copy Quelle Ziel \n");
         	return EXIT_FAILURE;
 	}
     
         
-        int fdin = open(argv[1], O_RDONLY);
+        int fdin = open(arguments[1], O_RDONLY); //versuch die  Quelle zu Öffnen
+        
 	if(fdin < 0){
-		fprintf(stderr, "Kann datei nich öffnen: %s \n", argv[1]);
+            
+		fprintf(stderr, "Kann datei nich öffnen: %s \n", arguments[1]);
 		return EXIT_FAILURE;
 	}
 
 		// read access modes
+        
 	if(fstat(fdin, &status) < 0) {
 		perror("fstat: ");
 	        exit(EXIT_FAILURE);
@@ -38,20 +42,20 @@ int main(int argc, char * argv[]) {
 	mode = status.st_mode & ~S_IFMT;
 
 	
-	int fdout = open(argv[2], O_WRONLY| O_CREAT| O_EXCL, 0);
+	int fdout = open(arguments[2], O_WRONLY| O_CREAT| O_EXCL, 0);
 	if(fdout < 0 && errno == EEXIST){
-		fprintf(stderr, "Datei %s exestiert bereits, überschreiben(y/n)?", argv[2]);
+		fprintf(stderr, "Datei %s exestiert bereits, überschreiben(y/n)?", arguments[2]);
 		char ch;
 		if((ch = getchar()) == 'y') {
-			if ((fdout = open(argv[2], O_WRONLY | O_TRUNC)) == -1) {
-				fprintf(stderr, "Fehler, falsche Datei: %s Grund: %s \n", argv[2], strerror(errno));
+			if ((fdout = open(arguments[2], O_WRONLY | O_TRUNC)) == -1) {
+				fprintf(stderr, "Fehler, falsche Datei: %s Grund: %s \n", arguments[2], strerror(errno));
 				exit(EXIT_FAILURE);
 			}
 		} else {
 			exit(EXIT_FAILURE);
 		}
 	} else {
-		fprintf(stderr, "Fehler, falsche Datei: %s Grund: %s \n", argv[2], strerror(errno));
+		fprintf(stderr, "Fehler, falsche Datei: %s Grund: %s \n", arguments[2], strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 
